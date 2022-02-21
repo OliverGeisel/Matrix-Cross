@@ -15,6 +15,16 @@ public class MatrixOO extends Matrix {
         }
     }
 
+    @Override
+    public double[] getRow(int index) {
+        return new double[0];
+    }
+
+    @Override
+    public double[] getColumn(int index) {
+        return new double[0];
+    }
+
     private MatrixElement getElement(int row, int column) {
         return matrix[row].getElement(column);
     }

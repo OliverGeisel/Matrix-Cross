@@ -8,6 +8,16 @@ public class MatrixArray2D extends MatrixArray{
     }
 
     @Override
+    public double[] getRow(int index) {
+        return new double[0];
+    }
+
+    @Override
+    public double[] getColumn(int index) {
+        return new double[0];
+    }
+
+    @Override
     public double getValue(int row, int column) {
         return 0;
     }

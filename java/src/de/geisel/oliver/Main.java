@@ -1,9 +1,6 @@
 package de.geisel.oliver;
 
-import de.geisel.oliver.matrix.Matrix;
-import de.geisel.oliver.matrix.MatrixArray1D;
-import de.geisel.oliver.matrix.MatrixOO;
-import de.geisel.oliver.matrix.MatrixWithThread;
+import de.geisel.oliver.matrix.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -31,7 +28,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        double t_start, t_end;
         double gflops;
         dim = 0;
 
@@ -59,7 +55,7 @@ public class Main {
 
             end = Instant.now();
             double seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ((double) 2 * dim * dim * dim / 1_000_000_000.0) / (seconds);
+            gflops = ( 2 *( dim * dim * dim )/ 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
             MatrixOO A_oo = new MatrixOO(dim, dim);
@@ -81,7 +77,7 @@ public class Main {
 
             end = Instant.now();
             seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ((double) 2 * dim * dim * dim / 1_000_000_000.0) / (seconds);
+            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
 
@@ -102,9 +98,31 @@ public class Main {
 
             end = Instant.now();
             seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ((double) 2 * dim * dim * dim / 1_000_000_000.0) / (seconds);
+            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
+
+
+            VectorMatrix A_Vector = new VectorMatrix(dim, dim);
+            VectorMatrix B_Vector = new VectorMatrix(dim, dim);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            start = Instant.now();
+
+
+            /* Begin matrix matrix multiply kernel */
+            Matrix C_Vector = A_Vector.multiply(B_Vector);
+            /* End matrix matrix multiply kernel */
+
+            end = Instant.now();
+            seconds = (double)Duration.between(start, end).toMillis() / 1000;
+            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
+
+            collect_info(seconds, gflops);
+
             System.out.println();
         }
     }

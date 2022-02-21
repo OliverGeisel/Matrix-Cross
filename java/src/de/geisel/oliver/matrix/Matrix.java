@@ -10,6 +10,10 @@ public abstract class Matrix {
         this.columns = columns;
     }
 
+    public abstract double[] getRow(int index);
+
+    public abstract double[] getColumn(int index);
+
     public abstract double getValue(int row, int column);
 
     public abstract void setValue(int row, int column, double value);
