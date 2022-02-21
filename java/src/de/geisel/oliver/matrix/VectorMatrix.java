@@ -55,6 +55,10 @@ public class VectorMatrix extends Matrix {
 
 	}
 
+	public void setVector(int row, int vectorNum, DoubleVector vector){
+		matrix[row][vectorNum]= vector;
+	}
+
 	@Override
 	public Matrix multiply(Matrix other) {
 		return null;
@@ -69,16 +73,30 @@ public class VectorMatrix extends Matrix {
 		var back = new VectorMatrix(this.getRows(), other.getColumns(), 0.0);
 		for (int row = 0; row < getRows(); row++) {
 			var row1 = this.matrix[row];
-			for (int column = 0; column < getColumns(); column++) {
-				var row2 = other.getRowVector(column);
-				for (int j = 0; j < row1.length; j++) {
-					var vector1 = row1[j];
-					var vector2 = row2[j];
-					var result = vector1.mul(vector2);
-					back.setValue(row, column, result.reduceLanes(VectorOperators.ADD));
+			int vectorNum = 0;
+				int vectorResultCount = 0;
+
+				double[] vectorResult = new double[row1[0].length()];
+				for (int column = 0; column < getColumns(); column++) {
+					var row2 = other.getRowVector(column);
+					var result = DoubleVector.broadcast(SPECIES,0.0);
+
+					for (int j = 0; j < row1.length; j++) {
+						var vector1 = row1[j];
+						var vector2 = row2[j];
+						result.add(vector1.mul(vector2));
+					}
+					var cellResult = result.reduceLanes(VectorOperators.ADD);
+					vectorResult[vectorResultCount]=cellResult;
+					vectorResultCount++;
+					if (vectorResultCount==4){
+						back.setVector(row,vectorNum ,DoubleVector.fromArray(SPECIES,vectorResult,0));
+						vectorResult=new double[4];
+						vectorResultCount=0;
+						vectorNum++;
+					}
 				}
 			}
-		}
 		return back;
 	}
 

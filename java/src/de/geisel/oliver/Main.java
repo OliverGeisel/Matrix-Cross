@@ -55,7 +55,7 @@ public class Main {
 
             end = Instant.now();
             double seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ( 2 *( dim * dim * dim )/ 1_000_000_000.0) / seconds;
+            gflops = ( 2 * Math.pow(dim,3) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
             MatrixOO A_oo = new MatrixOO(dim, dim);
@@ -77,7 +77,7 @@ public class Main {
 
             end = Instant.now();
             seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
+            gflops = ( 2 * Math.pow(dim,3) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
 
@@ -98,7 +98,7 @@ public class Main {
 
             end = Instant.now();
             seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
+            gflops = ( 2 * Math.pow(dim,3) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
 
@@ -119,7 +119,7 @@ public class Main {
 
             end = Instant.now();
             seconds = (double)Duration.between(start, end).toMillis() / 1000;
-            gflops = ( 2 * (dim * dim * dim) / 1_000_000_000.0) / seconds;
+            gflops = ( 2 * Math.pow(dim,3) / 1_000_000_000.0) / seconds;
 
             collect_info(seconds, gflops);
 
@@ -128,6 +128,6 @@ public class Main {
     }
 
     static void collect_info(double duration, double gflops) {
-        System.out.printf("Dim: %4d runtime: %7.4fs GFLOP/s: %.2f\n", dim, duration, gflops);
+        System.out.printf("Dim: %4d runtime: %7.4fs GFLOP/s: %.3f\n", dim, duration, gflops);
     }
 }
