@@ -9,17 +9,17 @@ public class VectorMatrix extends Matrix {
 
 	static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
-	private DoubleVector[][] matrix;
+	private final DoubleVector[][] matrix;
 
 	public VectorMatrix(int rows, int columns) {
 		super(rows, columns);
 		matrix = new DoubleVector[rows][columns / SPECIES.length()];
-		for (int i = 0; i < rows; i++) {
+		for (int i = 0; i < rows; ++i) {
 			double[] values = new double[columns];
-			for (int j = 0; j < columns; j++) {
+			for (int j = 0; j < columns; ++j) {
 				values[j] = Math.random() * 200 - 100;
 			}
-			for (int k = 0; k < matrix[i].length; k++) {
+			for (int k = 0; k < matrix[i].length; ++k) {
 				matrix[i][k] = DoubleVector.fromArray(SPECIES, values, k * SPECIES.length());
 			}
 		}
@@ -41,8 +41,18 @@ public class VectorMatrix extends Matrix {
 	}
 
 	@Override
+	public void setRow(int index, double[] row) {
+
+	}
+
+	@Override
 	public double[] getColumn(int index) {
 		return new double[0];
+	}
+
+	@Override
+	public void setColumn(int index, double[] column) {
+
 	}
 
 	@Override
@@ -55,8 +65,8 @@ public class VectorMatrix extends Matrix {
 
 	}
 
-	public void setVector(int row, int vectorNum, DoubleVector vector){
-		matrix[row][vectorNum]= vector;
+	public void setVector(int row, int vectorNum, DoubleVector vector) {
+		matrix[row][vectorNum] = vector;
 	}
 
 	@Override
@@ -64,39 +74,39 @@ public class VectorMatrix extends Matrix {
 		return null;
 	}
 
-	private DoubleVector[] getRowVector(int row){
+	private DoubleVector[] getRowVector(int row) {
 		return matrix[row];
 	}
 
 
 	public Matrix multiply(VectorMatrix other) {
 		var back = new VectorMatrix(this.getRows(), other.getColumns(), 0.0);
-		for (int row = 0; row < getRows(); row++) {
-			var row1 = this.matrix[row];
+		for (int row = 0; row < getRows(); ++row) {
+			var row1 = matrix[row];
 			int vectorNum = 0;
-				int vectorResultCount = 0;
+			int vectorResultCount = 0;
 
-				double[] vectorResult = new double[row1[0].length()];
-				for (int column = 0; column < getColumns(); column++) {
-					var row2 = other.getRowVector(column);
-					var result = DoubleVector.broadcast(SPECIES,0.0);
+			double[] vectorResult = new double[SPECIES.length()];
+			for (int column = 0; column < getColumns(); ++column) {
+				var row2 = other.getRowVector(column);
+				var result = DoubleVector.broadcast(SPECIES, 0.0);
 
-					for (int j = 0; j < row1.length; j++) {
-						var vector1 = row1[j];
-						var vector2 = row2[j];
-						result.add(vector1.mul(vector2));
-					}
-					var cellResult = result.reduceLanes(VectorOperators.ADD);
-					vectorResult[vectorResultCount]=cellResult;
-					vectorResultCount++;
-					if (vectorResultCount==4){
-						back.setVector(row,vectorNum ,DoubleVector.fromArray(SPECIES,vectorResult,0));
-						vectorResult=new double[4];
-						vectorResultCount=0;
-						vectorNum++;
-					}
+				for (int j = 0; j < row1.length; ++j) {
+					var vector1 = row1[j];
+					var vector2 = row2[j];
+					result.add(vector1.mul(vector2));
+				}
+				var cellResult = result.reduceLanes(VectorOperators.ADD);
+				vectorResult[vectorResultCount] = cellResult;
+				vectorResultCount++;
+				if (vectorResultCount == SPECIES.length()) {
+					back.setVector(row, vectorNum, DoubleVector.fromArray(SPECIES, vectorResult, 0));
+					vectorResult = new double[SPECIES.length()];
+					vectorResultCount = 0;
+					vectorNum++;
 				}
 			}
+		}
 		return back;
 	}
 

@@ -1,7 +1,7 @@
 package de.geisel.oliver.matrix;
 
 public class MatrixElement {
-    private double value;
+    private final double value;
 
     public MatrixElement() {
         value = 0;
@@ -15,16 +15,11 @@ public class MatrixElement {
         return value;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public MatrixElement add(double value) {
+        return new MatrixElement(value+this.value);
     }
 
-
-    public void add(double value) {
-        this.value += value;
-    }
-
-    public void multiyply(double value){
-        this.value*= value;
+    public MatrixElement multiyply(double value){
+       return new MatrixElement(this.value* value);
     }
 }

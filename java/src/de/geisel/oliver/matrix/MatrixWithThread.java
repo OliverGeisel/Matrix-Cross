@@ -4,83 +4,94 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MatrixWithThread extends MatrixArray1D {
-    public MatrixWithThread(int rows, int columns, boolean random) {
-        super(rows, columns, random);
-    }
+	public MatrixWithThread(int rows, int columns, boolean random) {
+		super(rows, columns, random);
+	}
 
 
-    @Override
-    public Matrix multiply(Matrix other) {
-        Matrix result = new MatrixArray1D(this.getRows(), other.getColumns(), false);
-        int size = getColumns();
-        Thread zellThread;
-        List<Thread> threads = new LinkedList<>();
-        for (int i = 0; i < result.getRows(); i++) {
-            double[] row = getRow(i);
-            zellThread = new LineThread(row, other, result, i, size);
-            threads.add(zellThread);
-            zellThread.start();
+	@Override
+	public Matrix multiply(Matrix other) {
+		MatrixArray1D result = new MatrixArray1D(getRows(), other.getColumns(), false);
+		int size = getColumns();
+		Thread LineThread;
+		List<Thread> threads = new LinkedList<>();
+		// run through all rows
+		int threadNum = 0;
+		for (int i = 0; i < result.getRows(); ++i) {
+			double[] row = getRow(i);
+			LineThread = new LineThread(row, other, result, size, i);
+			threads.add(LineThread);
+			LineThread.start();
+			++threadNum;
+			if (threadNum == 8) {
+				threads.forEach(x -> {
+					try {
+						x.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				});
+				threads.clear();
+				threadNum = 0;
+			}
+		}
 
-        }
-        threads.forEach(x -> {
-            try {
-                x.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        return result;
-    }
+		return result;
+	}
 
-    private static  class ZellThread extends Thread {
+	private static class ZellThread extends Thread {
 
-        private double[] matrixA, matrixB;
-        private Matrix result;
-        private int row, column, size;
+		private final double[] matrixA, matrixB;
+		private final Matrix result;
+		private final int row, column, size;
 
-        public ZellThread(double[] matrixA1, double[] matrixB1, Matrix result1, int row1, int column1, int size1) {
+		public ZellThread(double[] matrixA1, double[] matrixB1, Matrix result1, int row1, int column1, int size1) {
 
-            this.matrixA = matrixA1;
-            this.matrixB = matrixB1;
-            this.result = result1;
-            this.row = row1;
-            this.column = column1;
-            this.size = size1;
-        }
+			this.matrixA = matrixA1;
+			this.matrixB = matrixB1;
+			this.result = result1;
+			this.row = row1;
+			this.column = column1;
+			this.size = size1;
+		}
 
-        public void run() {
-            double temp = 0.0;
-            for (int k = 0; k < size; k++) {
-                temp += matrixA[k] * matrixB[k];
-            }
-            result.setValue(row, column, temp);
-        }
-    }
+		public void run() {
+			double temp = 0.0;
+			for (int k = 0; k < size; k++) {
+				temp += matrixA[k] * matrixB[k];
+			}
+			result.setValue(row, column, temp);
+		}
+	}
 
-    private static class LineThread extends Thread {
+	private static class LineThread extends Thread {
 
-        private final double[] matrixA;
-        private final Matrix result, matrixB;
-        private final int row, size;
+		private final double[] rowFromA;
+		private final Matrix matrixC;
+		private final Matrix matrixB;
+		private final int index, size;
 
-        public LineThread(double[] matrixA, Matrix matrixB, Matrix result, int row, int size) {
+		public LineThread(double[] rowFromA, Matrix matrixB, Matrix result, int size, int index) {
+			this.rowFromA = rowFromA;
+			this.matrixB = matrixB;
+			this.matrixC = result;
+			this.size = size;
+			this.index = index;
+		}
 
-            this.matrixA = matrixA;
-            this.matrixB = matrixB;
-            this.result = result;
-            this.row = row;
-            this.size = size;
-        }
-
-        public void run() {
-            double temp = 0.0;
-            for (int j = 0; j < matrixB.getRows(); j++) {
-                double[] column = matrixB.getColumn(j);
-                for (int k = 0; k < size; k++) {
-                    temp += matrixA[k] * column[k];
-                }
-                result.setValue(row, j, temp);
-            }
-        }
-    }
+		public void run() {
+			double[] tempRow = new double[size];
+			// iterate through all cell
+			for (int j = 0; j < matrixB.getColumns(); ++j) {
+				double[] column = matrixB.getColumn(j);
+				double temp = 0.0;
+				// calculate one cell
+				for (int k = 0; k < size; ++k) {
+					temp += rowFromA[k] * column[k];
+				}
+				tempRow[j] = temp;
+			}
+			matrixC.setRow(index, tempRow);
+		}
+	}
 }

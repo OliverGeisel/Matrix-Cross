@@ -29,11 +29,11 @@ public class MatrixRow {
     }
 
     public void setValue(int column, double value) {
-        getElement(column).setValue(value);
+        row[column]= new MatrixElement(value);
     }
 
-    public MatrixElement getElement(int index){
-        return row[index];
+    public MatrixElement getElement(int column){
+        return row[column];
     }
 
 
@@ -43,11 +43,11 @@ public class MatrixRow {
         }
         MatrixElement[] newRow = new MatrixElement[row.length];
         for (int i = 0; i < row.length; i++) {
-            newRow[i] = new MatrixElement(row[i].getValue() * other.row[i].getValue());
+            newRow[i] = row[i].multiyply(other.row[i].getValue()) ;
         }
         return Arrays.stream(newRow).mapToDouble(MatrixElement::getValue).reduce(Double::sum).getAsDouble();
     }
 
-    private class DifferentSizeException extends RuntimeException {
+    private static class DifferentSizeException extends RuntimeException {
     }
 }

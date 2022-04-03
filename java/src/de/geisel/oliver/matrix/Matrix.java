@@ -2,41 +2,45 @@ package de.geisel.oliver.matrix;
 
 public abstract class Matrix {
 
-    private final int rows;
-    private final int columns;
+	private final int rows;
+	private final int columns;
 
-    public Matrix(int rows, int columns) {
-        this.rows = rows;
-        this.columns = columns;
-    }
+	public Matrix(int rows, int columns) {
+		this.rows = rows;
+		this.columns = columns;
+	}
 
-    public abstract double[] getRow(int index);
+	public abstract double[] getRow(int index);
 
-    public abstract double[] getColumn(int index);
+	public abstract void setRow(int index, double[] row);
 
-    public abstract double getValue(int row, int column);
+	public abstract double[] getColumn(int index);
 
-    public abstract void setValue(int row, int column, double value);
+	public abstract void setColumn(int index, double[] column);
 
-    public abstract Matrix multiply(Matrix other);
+	public abstract double getValue(int row, int column);
 
-    public abstract Matrix add(Matrix other);
+	public abstract void setValue(int row, int column, double value);
 
-    public abstract double getDet();
+	public abstract Matrix multiply(Matrix other);
 
-    public abstract double[] getMainDiagonal();
+	public abstract Matrix add(Matrix other);
 
-    public abstract Matrix transponate();
+	public abstract double getDet();
 
-    public abstract void scalarMultiply(double factor);
+	public abstract double[] getMainDiagonal();
 
-    public abstract Matrix getUnitMatrix();
+	public abstract Matrix transponate();
 
-    public int getRows() {
-        return rows;
-    }
+	public abstract void scalarMultiply(double factor);
 
-    public int getColumns() {
-        return columns;
-    }
+	public abstract Matrix getUnitMatrix();
+
+	public int getRows() {
+		return rows;
+	}
+
+	public int getColumns() {
+		return columns;
+	}
 }

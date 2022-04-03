@@ -21,8 +21,18 @@ public class MatrixOO extends Matrix {
     }
 
     @Override
+    public void setRow(int index, double[] row) {
+
+    }
+
+    @Override
     public double[] getColumn(int index) {
         return new double[0];
+    }
+
+    @Override
+    public void setColumn(int index, double[] column) {
+
     }
 
     private MatrixElement getElement(int row, int column) {
@@ -77,7 +87,9 @@ public class MatrixOO extends Matrix {
 
     @Override
     public void scalarMultiply(double factor) {
-
+        for(var row:matrix){
+            row.scalarMultiply(factor);
+        }
     }
 
     @Override

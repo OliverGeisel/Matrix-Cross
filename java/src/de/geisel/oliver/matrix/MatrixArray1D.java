@@ -19,12 +19,23 @@ public class MatrixArray1D extends MatrixArray {
     }
 
     @Override
+    public void setRow(int index, double[] row) {
+        int start = getColumns()*index;
+        System.arraycopy(row,0,elements,start,getColumns());
+    }
+
+    @Override
     public double[] getColumn(int index) {
         double[] back = new double[getRows()];
         for (int i=0; i < getRows(); i++){
             back[i] = elements[i*getColumns()+index];
         }
         return back;
+    }
+
+    @Override
+    public void setColumn(int index, double[] column) {
+        throw new NoSuchMethodError();
     }
 
     @Override
