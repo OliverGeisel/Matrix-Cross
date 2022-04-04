@@ -4,6 +4,10 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.function.DoubleBinaryOperator;
+
 
 public class VectorMatrix extends Matrix {
 
@@ -71,6 +75,9 @@ public class VectorMatrix extends Matrix {
 
 	@Override
 	public Matrix multiply(Matrix other) {
+		if (other instanceof VectorMatrix m2) {
+			return multiply(m2);
+		}
 		return null;
 	}
 
@@ -94,7 +101,7 @@ public class VectorMatrix extends Matrix {
 				for (int j = 0; j < row1.length; ++j) {
 					var vector1 = row1[j];
 					var vector2 = row2[j];
-					result.add(vector1.mul(vector2));
+					result = vector1.fma(vector2,result);
 				}
 				var cellResult = result.reduceLanes(VectorOperators.ADD);
 				vectorResult[vectorResultCount] = cellResult;
@@ -103,7 +110,7 @@ public class VectorMatrix extends Matrix {
 					back.setVector(row, vectorNum, DoubleVector.fromArray(SPECIES, vectorResult, 0));
 					vectorResult = new double[SPECIES.length()];
 					vectorResultCount = 0;
-					vectorNum++;
+					++vectorNum;
 				}
 			}
 		}
@@ -111,8 +118,22 @@ public class VectorMatrix extends Matrix {
 	}
 
 	@Override
-	public Matrix add(Matrix other) {
-		return null;
+	public Matrix add(Matrix other) throws IllegalArgumentException {
+		if (getRows() != other.getRows() || getColumns() != other.getColumns())
+			throw new IllegalArgumentException();
+
+		VectorMatrix back = new VectorMatrix(getRows(),getColumns());
+		if (other instanceof VectorMatrix otherVectorMatrix)
+		for (int rowIndex=0;rowIndex<matrix.length;++rowIndex){
+			DoubleVector[] row = matrix[rowIndex];
+			var otherRow=otherVectorMatrix.getRowVector(rowIndex);
+			for (int vectorIndex=0; vectorIndex<row.length;++vectorIndex){
+				var vector = row[vectorIndex];
+				back.setVector(rowIndex,vectorIndex,vector.add(otherRow[vectorIndex]));
+			}
+		}
+		return back;
+
 	}
 
 	@Override

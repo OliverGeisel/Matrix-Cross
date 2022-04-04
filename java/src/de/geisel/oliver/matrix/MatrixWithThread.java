@@ -4,14 +4,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MatrixWithThread extends MatrixArray1D {
-	public MatrixWithThread(int rows, int columns, boolean random) {
-		super(rows, columns, random);
+	protected MatrixWithThread(int rows, int columns) {
+		super(rows, columns);
+	}
+
+	public static MatrixWithThread zero(int rows, int columns){
+		return new MatrixWithThread(rows,columns);
+	}
+
+	public static MatrixWithThread random (int rows, int columns){
+		var back = new MatrixWithThread(rows,columns);
+		for (int i = 0; i < rows* columns; ++i) {
+			back.elements[i] = Math.random() * 200 - 100;
+		}
+		return back;
 	}
 
 
 	@Override
 	public Matrix multiply(Matrix other) {
-		MatrixArray1D result = new MatrixArray1D(getRows(), other.getColumns(), false);
+		MatrixArray1D result = MatrixArray1D.zero(getRows(), other.getColumns());
 		int size = getColumns();
 		Thread LineThread;
 		List<Thread> threads = new LinkedList<>();
@@ -23,7 +35,7 @@ public class MatrixWithThread extends MatrixArray1D {
 			threads.add(LineThread);
 			LineThread.start();
 			++threadNum;
-			if (threadNum == 8) {
+			if (threadNum == 32) {
 				threads.forEach(x -> {
 					try {
 						x.join();
