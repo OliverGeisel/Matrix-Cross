@@ -5,23 +5,22 @@ import java.util.Arrays;
 public class MatrixArray1D extends MatrixArray {
 	protected double[] elements;
 
-	protected MatrixArray1D(int rows, int columns) {
+	public MatrixArray1D(int rows, int columns) {
 		super(rows, columns);
 		elements = new double[rows * columns];
 	}
 
 	public static MatrixArray1D zero(int rows, int columns) {
-        return new MatrixArray1D(rows,columns);
+		return new MatrixArray1D(rows, columns);
 	}
 
-    public static MatrixArray1D random(int rows, int columns) {
-        var back= new MatrixArray1D(rows,columns);
-        for (int i = 0; i < rows * columns; ++i) {
-            back.elements[i] = Math.random() * 200 - 100;
-        }
-        return back;
+	public static MatrixArray1D random(int rows, int columns) {
+		var back = new MatrixArray1D(rows, columns);
+		for (int i = 0; i < rows * columns; ++i) {
+			back.elements[i] = Math.random() * 200 - 100;
+		}
+		return back;
 	}
-
 
 
 	@Override
@@ -51,12 +50,12 @@ public class MatrixArray1D extends MatrixArray {
 
 	@Override
 	public double getValue(int row, int column) {
-		return 0;
+		return elements[row * columns + column];
 	}
 
 	@Override
 	public void setValue(int row, int column, double value) {
-
+		elements[row * columns + column] = value;
 	}
 
 	@Override
@@ -81,7 +80,12 @@ public class MatrixArray1D extends MatrixArray {
 
 	@Override
 	public Matrix add(Matrix other) {
-		return null;
+		MatrixArray1D back = new MatrixArray1D(rows, columns);
+		double[] otherElements = ((MatrixArray1D) other).elements;
+		for (int i = 0; i < columns * rows; ++i) {
+			back.elements[i] = elements[i] + otherElements[i];
+		}
+		return back;
 	}
 
 	@Override
@@ -100,8 +104,11 @@ public class MatrixArray1D extends MatrixArray {
 	}
 
 	@Override
-	public void scalarMultiply(double factor) {
-
+	public Matrix scalarMultiply(double factor) {
+		MatrixArray1D back = new MatrixArray1D(rows, columns);
+		// Todo change to pure array
+		back.elements = Arrays.stream(elements).map(it -> it * factor).parallel().toArray();
+		return back;
 	}
 
 	@Override

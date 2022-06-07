@@ -15,6 +15,7 @@ public class Main {
 
 	static private final String OOP = "OOP";
 	static private final String NORMAL = "1D";
+	static private final String NORMAL_2D = "2D";
 	static private final String THREAD = "Thread";
 	static private final String VECTOR = "Vector";
 
@@ -45,8 +46,7 @@ public class Main {
 		Constructor<? extends Matrix> constructor = null;
 		try {
 			var clazz = A.getClass();
-			constructor = clazz.getDeclaredConstructor(int.class, int.class);
-			constructor.setAccessible(true);
+			constructor = clazz.getConstructor(int.class, int.class);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -55,8 +55,8 @@ public class Main {
 		Matrix tempA = null;
 		Matrix tempB = null;
 		try {
-			tempA = constructor.newInstance(1024, 1024);
-			tempB = constructor.newInstance(1024, 1024);
+			tempA = constructor.newInstance(512, 512);
+			tempB = constructor.newInstance(512, 512);
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +67,7 @@ public class Main {
 		Matrix C = A.multiply(B);
 		/* End matrix matrix multiply kernel */
 		end = Instant.now();
-
+		C.getRow(0);
 		double seconds = ((double) Duration.between(start, end).toNanos()) / 1_000_000_000;
 		double gflops = getGFLOPs(dim, seconds);
 
@@ -84,6 +84,10 @@ public class Main {
 			MatrixArray1D A = MatrixArray1D.random(dim, dim);
 			MatrixArray1D B = MatrixArray1D.random(dim, dim);
 			run(A, B, dim, NORMAL);
+
+			MatrixArray2D A_2D = MatrixArray2D.random(dim, dim);
+			MatrixArray2D B_2D = MatrixArray2D.random(dim, dim);
+			run(A_2D, B_2D, dim, NORMAL_2D);
 
 			MatrixOO A_oo = new MatrixOO(dim, dim);
 			MatrixOO B_oo = new MatrixOO(dim, dim);
@@ -105,7 +109,7 @@ public class Main {
 		return (2 * Math.pow(dim, 3) / 1_000_000_000.0) / seconds;
 	}
 
-	static void collect_info(double duration, double gflops, String typ) {
+	private static void collect_info(double duration, double gflops, String typ) {
 		System.out.printf("%s\tDim: %4d runtime: %7.6fs GFLOP/s: %.6f\n", typ, dim, duration, gflops);
 	}
 }

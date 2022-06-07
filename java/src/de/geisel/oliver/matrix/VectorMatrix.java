@@ -4,10 +4,6 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.function.DoubleBinaryOperator;
-
 
 public class VectorMatrix extends Matrix {
 
@@ -101,7 +97,7 @@ public class VectorMatrix extends Matrix {
 				for (int j = 0; j < row1.length; ++j) {
 					var vector1 = row1[j];
 					var vector2 = row2[j];
-					result = vector1.fma(vector2,result);
+					result = vector1.fma(vector2, result);
 				}
 				var cellResult = result.reduceLanes(VectorOperators.ADD);
 				vectorResult[vectorResultCount] = cellResult;
@@ -122,16 +118,16 @@ public class VectorMatrix extends Matrix {
 		if (getRows() != other.getRows() || getColumns() != other.getColumns())
 			throw new IllegalArgumentException();
 
-		VectorMatrix back = new VectorMatrix(getRows(),getColumns());
+		VectorMatrix back = new VectorMatrix(getRows(), getColumns());
 		if (other instanceof VectorMatrix otherVectorMatrix)
-		for (int rowIndex=0;rowIndex<matrix.length;++rowIndex){
-			DoubleVector[] row = matrix[rowIndex];
-			var otherRow=otherVectorMatrix.getRowVector(rowIndex);
-			for (int vectorIndex=0; vectorIndex<row.length;++vectorIndex){
-				var vector = row[vectorIndex];
-				back.setVector(rowIndex,vectorIndex,vector.add(otherRow[vectorIndex]));
+			for (int rowIndex = 0; rowIndex < matrix.length; ++rowIndex) {
+				DoubleVector[] row = matrix[rowIndex];
+				var otherRow = otherVectorMatrix.getRowVector(rowIndex);
+				for (int vectorIndex = 0; vectorIndex < row.length; ++vectorIndex) {
+					var vector = row[vectorIndex];
+					back.setVector(rowIndex, vectorIndex, vector.add(otherRow[vectorIndex]));
+				}
 			}
-		}
 		return back;
 
 	}
@@ -152,8 +148,9 @@ public class VectorMatrix extends Matrix {
 	}
 
 	@Override
-	public void scalarMultiply(double factor) {
-
+	public Matrix scalarMultiply(double factor) {
+		// todo implement
+		return null;
 	}
 
 	@Override

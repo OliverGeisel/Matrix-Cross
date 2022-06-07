@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MatrixWithThread extends MatrixArray1D {
-	protected MatrixWithThread(int rows, int columns) {
+	public MatrixWithThread(int rows, int columns) {
 		super(rows, columns);
 	}
 
@@ -25,17 +25,17 @@ public class MatrixWithThread extends MatrixArray1D {
 	public Matrix multiply(Matrix other) {
 		MatrixArray1D result = MatrixArray1D.zero(getRows(), other.getColumns());
 		int size = getColumns();
-		Thread LineThread;
+		Thread lineThread;
 		List<Thread> threads = new LinkedList<>();
 		// run through all rows
 		int threadNum = 0;
 		for (int i = 0; i < result.getRows(); ++i) {
 			double[] row = getRow(i);
-			LineThread = new LineThread(row, other, result, size, i);
-			threads.add(LineThread);
-			LineThread.start();
+			lineThread = new LineThread(row, other, result, size, i);
+			threads.add(lineThread);
+			lineThread.start();
 			++threadNum;
-			if (threadNum == 32) {
+			if (threadNum == 8) {
 				threads.forEach(x -> {
 					try {
 						x.join();
@@ -81,7 +81,8 @@ public class MatrixWithThread extends MatrixArray1D {
 		private final double[] rowFromA;
 		private final Matrix matrixC;
 		private final Matrix matrixB;
-		private final int index, size;
+		private final int index;
+		private final int size;
 
 		public LineThread(double[] rowFromA, Matrix matrixB, Matrix result, int size, int index) {
 			this.rowFromA = rowFromA;

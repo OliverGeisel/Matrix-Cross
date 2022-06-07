@@ -2,8 +2,8 @@ package de.geisel.oliver.matrix;
 
 public abstract class Matrix {
 
-	private final int rows;
-	private final int columns;
+	protected final int rows;
+	protected final int columns;
 
 	public Matrix(int rows, int columns) {
 		this.rows = rows;
@@ -32,7 +32,7 @@ public abstract class Matrix {
 
 	public abstract Matrix transponate();
 
-	public abstract void scalarMultiply(double factor);
+	public abstract Matrix scalarMultiply(double factor);
 
 	public abstract Matrix getUnitMatrix();
 

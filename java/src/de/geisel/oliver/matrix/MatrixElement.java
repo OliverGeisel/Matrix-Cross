@@ -19,7 +19,7 @@ public class MatrixElement {
         return new MatrixElement(value+this.value);
     }
 
-    public MatrixElement multiyply(double value){
-       return new MatrixElement(this.value* value);
+    public MatrixElement multiply(double value) {
+        return new MatrixElement(this.value * value);
     }
 }
