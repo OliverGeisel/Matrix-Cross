@@ -82,15 +82,15 @@ public class VectorMatrix extends Matrix {
 	}
 
 
-	public Matrix multiply(VectorMatrix other) {
-		var back = new VectorMatrix(this.getRows(), other.getColumns(), 0.0);
-		for (int row = 0; row < getRows(); ++row) {
+	public Matrix multiply(final VectorMatrix other) {
+		var back = new VectorMatrix(rows, other.columns, 0.0);
+		for (int row = 0; row < rows; ++row) {
 			var row1 = matrix[row];
 			int vectorNum = 0;
 			int vectorResultCount = 0;
 
 			double[] vectorResult = new double[SPECIES.length()];
-			for (int column = 0; column < getColumns(); ++column) {
+			for (int column = 0; column < columns; ++column) {
 				var row2 = other.getRowVector(column);
 				var result = DoubleVector.broadcast(SPECIES, 0.0);
 
@@ -101,7 +101,7 @@ public class VectorMatrix extends Matrix {
 				}
 				var cellResult = result.reduceLanes(VectorOperators.ADD);
 				vectorResult[vectorResultCount] = cellResult;
-				vectorResultCount++;
+				++vectorResultCount;
 				if (vectorResultCount == SPECIES.length()) {
 					back.setVector(row, vectorNum, DoubleVector.fromArray(SPECIES, vectorResult, 0));
 					vectorResult = new double[SPECIES.length()];

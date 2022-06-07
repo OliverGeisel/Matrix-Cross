@@ -5,7 +5,7 @@ public abstract class Matrix {
 	protected final int rows;
 	protected final int columns;
 
-	public Matrix(int rows, int columns) {
+	protected Matrix(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
 	}

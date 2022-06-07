@@ -29,9 +29,9 @@ public class MatrixWithThread extends MatrixArray1D {
 		List<Thread> threads = new LinkedList<>();
 		// run through all rows
 		int threadNum = 0;
-		for (int i = 0; i < result.getRows(); ++i) {
-			double[] row = getRow(i);
-			lineThread = new LineThread(row, other, result, size, i);
+		for (int rowNumber = 0; rowNumber < result.rows; ++rowNumber) {
+			double[] row = getRow(rowNumber);
+			lineThread = new LineThread(row, other, result, size, rowNumber);
 			threads.add(lineThread);
 			lineThread.start();
 			++threadNum;
@@ -47,7 +47,6 @@ public class MatrixWithThread extends MatrixArray1D {
 				threadNum = 0;
 			}
 		}
-
 		return result;
 	}
 
@@ -79,32 +78,32 @@ public class MatrixWithThread extends MatrixArray1D {
 	private static class LineThread extends Thread {
 
 		private final double[] rowFromA;
-		private final Matrix matrixC;
+		private final MatrixArray1D result;
 		private final Matrix matrixB;
 		private final int index;
 		private final int size;
 
-		public LineThread(double[] rowFromA, Matrix matrixB, Matrix result, int size, int index) {
+		public LineThread(double[] rowFromA, Matrix matrixB, MatrixArray1D result, int size, int index) {
 			this.rowFromA = rowFromA;
 			this.matrixB = matrixB;
-			this.matrixC = result;
+			this.result = result;
 			this.size = size;
 			this.index = index;
 		}
 
 		public void run() {
-			double[] tempRow = new double[size];
-			// iterate through all cell
-			for (int j = 0; j < matrixB.getColumns(); ++j) {
+			double[] resultRow = new double[size];
+			// iterate through all cells in line
+			for (int j = 0; j < size; ++j) {
 				double[] column = matrixB.getColumn(j);
 				double temp = 0.0;
 				// calculate one cell
 				for (int k = 0; k < size; ++k) {
 					temp += rowFromA[k] * column[k];
 				}
-				tempRow[j] = temp;
+				resultRow[j] = temp;
 			}
-			matrixC.setRow(index, tempRow);
+			System.arraycopy(resultRow, 0, result.elements, index * size, size);
 		}
 	}
 }

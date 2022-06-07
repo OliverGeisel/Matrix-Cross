@@ -25,20 +25,21 @@ public class MatrixArray1D extends MatrixArray {
 
 	@Override
 	public double[] getRow(int index) {
-		return Arrays.copyOfRange(elements, index * getColumns(), index * getColumns() + getColumns());
+		final int offset = index * columns;
+		return Arrays.copyOfRange(elements, offset, offset + columns);
 	}
 
 	@Override
 	public void setRow(int index, double[] row) {
-		int start = getColumns() * index;
-		System.arraycopy(row, 0, elements, start, getColumns());
+		int offset = columns * index;
+		System.arraycopy(row, 0, elements, offset, columns);
 	}
 
 	@Override
 	public double[] getColumn(int index) {
-		double[] back = new double[getRows()];
-		for (int i = 0; i < getRows(); i++) {
-			back[i] = elements[i * getColumns() + index];
+		double[] back = new double[rows];
+		for (int i = 0; i < rows; i++) {
+			back[i] = elements[i * columns + index];
 		}
 		return back;
 	}
@@ -64,14 +65,14 @@ public class MatrixArray1D extends MatrixArray {
 		int rows = getRows();
 		int column = other.getColumns();
 		int same = getColumns();
-		final double[] A = this.elements;
-		final double[] B = ((MatrixArray1D) other).elements;
-		final double[] C = back.elements;
+		final double[] matrixA = this.elements;
+		final double[] matrixB = ((MatrixArray1D) other).elements;
+		final double[] matrixC = back.elements;
 		for (int i = 0; i < rows; i++) {
 			for (int k = 0; k < same; k++) {
 				for (int j = 0; j < column; j++) {
 					// C[i][j] += A[i][k] * B[k][j]
-					C[i * rows + j] += A[i * rows + k] * B[k * rows + j];
+					matrixC[i * rows + j] += matrixA[i * rows + k] * matrixB[k * rows + j];
 				}
 			}
 		}
