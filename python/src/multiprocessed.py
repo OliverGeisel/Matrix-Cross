@@ -1,6 +1,7 @@
+import multiprocessing as mp
 import random
 import time
-import multiprocessing as mp
+
 import src.subthread
 
 dim = 0
@@ -44,7 +45,7 @@ def zero_mat(dim_of_mat):
     return [[0] * dim_of_mat] * dim_of_mat
 
 
-def calc():
+def calc_per_column():
     while dim < max_dim:
         set_dim()
         mat_A = random_mat(dim)
@@ -71,8 +72,8 @@ def calc():
                     b_column.append(mat_B[row][i])
                 args.append((a_row, b_column, dim))
                 j += 1
-            with mp.Pool(8) as pool:
-                result = pool.starmap(src.subthread.subthread, args)
+            with mp.Pool(4) as pool:
+                result = pool.starmap(src.subthread.subthread_column, args)
             x = 0
             while x < len(result):
                 mat_C[i][x] += result[x]
@@ -88,14 +89,51 @@ def calc():
             output.writelines(header)
             output.writelines(results)
 
-    return
+
+def calc_per_row():
+    while dim < max_dim:
+        set_dim()
+        mat_A = random_mat(dim)
+        mat_B = random_mat(dim)
+        mat_B_transpose = [list() for x in range(dim)]
+
+        for row in mat_B:
+            for j, cell in enumerate(row):
+                mat_B_transpose[j].append(cell)
+
+        if None in [mat_A, mat_B]:
+            print("Allocation of matrix failed.\n")
+            exit("EXIT_FAILURE")
+        time.sleep(1)
+
+        start = time.perf_counter()
+        # Begin matrix matrix multiply kernel
+        row_num = 0
+        with mp.Pool(8) as pool:
+            args = list()
+            row_num = 0
+            while row_num < dim:
+                # args for every row
+                row = mat_A[row_num]
+                args.append((row, mat_B_transpose, dim))
+                row_num += 1
+            mat_C = pool.starmap(src.subthread.subthread_row, args)
+        # End matrix matrix multiply kernel
+        end = time.perf_counter()
+
+        gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
+        collect_info(start, end, gflops)
+        # collect results in one output File
+        with open("Ergebnisse_python-multiprocessed.txt", "w") as output:
+            output.writelines(header)
+            output.writelines(results)
 
 
 def matrix():
     print(mp.get_all_start_methods())
     mp.set_start_method("spawn")
     print(f"Method: {str(mp.get_start_method())}")
-    calc()
+    calc_per_row()
 
 
 if __name__ == "__main__":
