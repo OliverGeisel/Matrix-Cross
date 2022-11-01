@@ -1,9 +1,12 @@
 import multiprocessing as mp
+import os
 import random
+import sys
 import time
 
 import src.subthread
 
+num_process = 1
 dim = 0
 step = 32
 max_dim = 2048 * 4
@@ -73,7 +76,7 @@ def calc_per_column():
                         b_column.append(mat_B[row][i])
                     args.append((a_row, b_column, dim))
                     j += 1
-                with mp.Pool(4) as pool:
+                with mp.Pool(num_process) as pool:
                     result = pool.starmap(src.subthread.subthread_column, args)
                 x = 0
                 while x < len(result):
@@ -113,7 +116,7 @@ def calc_per_row():
 
             start = time.perf_counter()
             # Begin matrix matrix multiply kernel
-            with mp.Pool(8) as pool:
+            with mp.Pool(num_process) as pool:
                 args = list()
                 row_num = 0
                 while row_num < dim:
@@ -137,10 +140,17 @@ def calc_per_row():
 
 
 def matrix():
+    global num_process
     print(mp.get_all_start_methods())
     mp.set_start_method("spawn")
     print(f"Method: {str(mp.get_start_method())}")
-    calc_per_row()
+    num_process = int(os.environ.get("NUMBER_OF_PROCESSORS")) if len(sys.argv) < 2 else int(sys.argv[1])
+    if len(sys.argv) > 2:
+        print("Process per column per row ")
+        calc_per_column()
+    else:
+        print("Process per row")
+        calc_per_row()
 
 
 if __name__ == "__main__":
