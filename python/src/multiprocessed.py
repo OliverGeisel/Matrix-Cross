@@ -46,84 +46,91 @@ def zero_mat(dim_of_mat):
 
 
 def calc_per_column():
-    while dim < max_dim:
-        set_dim()
-        mat_A = random_mat(dim)
-        mat_B = random_mat(dim)
-        mat_C = zero_mat(dim)
-        size = range(dim)
+    try:
+        while dim < max_dim:
+            set_dim()
+            mat_A = random_mat(dim)
+            mat_B = random_mat(dim)
+            mat_C = zero_mat(dim)
+            size = range(dim)
 
-        if None in [mat_A, mat_B, mat_C]:
-            print("Allocation of matrix failed.\n")
-            exit("EXIT_FAILURE")
-        time.sleep(1)
+            if None in [mat_A, mat_B, mat_C]:
+                print("Allocation of matrix failed.\n")
+                exit("EXIT_FAILURE")
+            time.sleep(1)
 
-        start = time.perf_counter()
+            start = time.perf_counter()
 
-        # Begin matrix matrix multiply kernel
-        i = 0
-        while i < dim:
-            j = 0
-            a_row = mat_A[i]
-            args = list()
-            while j < dim:
-                b_column = list()
-                for row in size:
-                    b_column.append(mat_B[row][i])
-                args.append((a_row, b_column, dim))
-                j += 1
-            with mp.Pool(4) as pool:
-                result = pool.starmap(src.subthread.subthread_column, args)
-            x = 0
-            while x < len(result):
-                mat_C[i][x] += result[x]
-                x += 1
-            i += 1
-        # End matrix matrix multiply kernel
+            # Begin matrix matrix multiply kernel
+            i = 0
+            while i < dim:
+                j = 0
+                a_row = mat_A[i]
+                args = list()
+                while j < dim:
+                    b_column = list()
+                    for row in size:
+                        b_column.append(mat_B[row][i])
+                    args.append((a_row, b_column, dim))
+                    j += 1
+                with mp.Pool(4) as pool:
+                    result = pool.starmap(src.subthread.subthread_column, args)
+                x = 0
+                while x < len(result):
+                    mat_C[i][x] += result[x]
+                    x += 1
+                i += 1
+            # End matrix matrix multiply kernel
 
-        end = time.perf_counter()
-        gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
-        collect_info(start, end, gflops)
+            end = time.perf_counter()
+            gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
+            collect_info(start, end, gflops)
         # collect results in one output File
+    except:
+        pass
+    finally:
         with open("Ergebnisse_python-threaded.txt", "w") as output:
             output.writelines(header)
             output.writelines(results)
 
 
 def calc_per_row():
-    while dim < max_dim:
-        set_dim()
-        mat_A = random_mat(dim)
-        mat_B = random_mat(dim)
-        mat_B_transpose = [list() for x in range(dim)]
+    try:
+        while dim < max_dim:
+            set_dim()
+            mat_A = random_mat(dim)
+            mat_B = random_mat(dim)
+            mat_B_transpose = [list() for x in range(dim)]
 
-        for row in mat_B:
-            for j, cell in enumerate(row):
-                mat_B_transpose[j].append(cell)
+            for row in mat_B:
+                for j, cell in enumerate(row):
+                    mat_B_transpose[j].append(cell)
 
-        if None in [mat_A, mat_B]:
-            print("Allocation of matrix failed.\n")
-            exit("EXIT_FAILURE")
-        time.sleep(1)
+            if None in [mat_A, mat_B]:
+                print("Allocation of matrix failed.\n")
+                exit("EXIT_FAILURE")
+            time.sleep(1)
 
-        start = time.perf_counter()
-        # Begin matrix matrix multiply kernel
-        row_num = 0
-        with mp.Pool(8) as pool:
-            args = list()
-            row_num = 0
-            while row_num < dim:
-                # args for every row
-                row = mat_A[row_num]
-                args.append((row, mat_B_transpose, dim))
-                row_num += 1
-            mat_C = pool.starmap(src.subthread.subthread_row, args)
-        # End matrix matrix multiply kernel
-        end = time.perf_counter()
+            start = time.perf_counter()
+            # Begin matrix matrix multiply kernel
+            with mp.Pool(8) as pool:
+                args = list()
+                row_num = 0
+                while row_num < dim:
+                    # args for every row
+                    row = mat_A[row_num]
+                    args.append((row, mat_B_transpose, dim))
+                    row_num += 1
+                mat_C = pool.starmap(src.subthread.subthread_row, args)
+            # End matrix matrix multiply kernel
+            end = time.perf_counter()
 
-        gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
-        collect_info(start, end, gflops)
-        # collect results in one output File
+            gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
+            collect_info(start, end, gflops)
+            # collect results in one output File
+    except:
+        pass
+    finally:
         with open("Ergebnisse_python-multiprocessed.txt", "w") as output:
             output.writelines(header)
             output.writelines(results)

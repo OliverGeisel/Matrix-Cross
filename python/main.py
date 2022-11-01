@@ -43,7 +43,6 @@ def zero_mat(dim_of_mat):
 
 
 def calc():
-
     while dim < max_dim:
         set_dim()
         mat_A = random_mat(dim)
@@ -74,7 +73,6 @@ def calc():
         output.writelines(header)
         output.writelines(results)
 
-    return
 
 
 def matrix():

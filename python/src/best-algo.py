@@ -1,4 +1,5 @@
 import time
+
 import numpy as np
 
 dim = 0
@@ -43,29 +44,31 @@ def zero_mat(dim_of_mat):
 
 
 def calc():
-    while dim < max_dim:
-        set_dim()
-        mat_A = random_mat(dim)
-        mat_B = random_mat(dim)
-        mat_C = zero_mat(dim)
+    try:
+        while dim < max_dim:
+            set_dim()
+            mat_A = random_mat(dim)
+            mat_B = random_mat(dim)
+            mat_C = zero_mat(dim)
 
-        if None is [mat_A, mat_B, mat_C]:
-            print("Allocation of matrix failed.\n")
-            exit("EXIT_FAILURE")
-        time.sleep(1)
+            if None is [mat_A, mat_B, mat_C]:
+                print("Allocation of matrix failed.\n")
+                exit("EXIT_FAILURE")
+            time.sleep(1)
 
-        start = time.perf_counter()
-        mat_C = mat_A.dot(mat_B)
+            start = time.perf_counter()
+            mat_C = mat_A.dot(mat_B)
 
-        end = time.perf_counter()
-        gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (np.inf if (end - start) == 0.0 else end - start)
-        collect_info(start, end, gflops)
-    # collect results in one output File
-    with open("Ergebnisse_python-best-algo.txt", "w") as output:
-        output.writelines(header)
-        output.writelines(results)
-
-    return
+            end = time.perf_counter()
+            gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (np.inf if (end - start) == 0.0 else end - start)
+            collect_info(start, end, gflops)
+    except:
+        pass
+    finally:
+        # collect results in one output File
+        with open("Ergebnisse_python-best-algo.txt", "w") as output:
+            output.writelines(header)
+            output.writelines(results)
 
 
 def matrix():

@@ -43,37 +43,39 @@ def zero_mat(dim_of_mat):
 
 
 def calc():
-    while dim < max_dim:
-        set_dim()
-        mat_A = random_mat(dim)
-        mat_B = random_mat(dim)
-        mat_C = zero_mat(dim)
-        size = range(dim)
+    try:
+        while dim < max_dim:
+            set_dim()
+            mat_A = random_mat(dim)
+            mat_B = random_mat(dim)
+            mat_C = zero_mat(dim)
+            size = range(dim)
 
-        if None in [mat_A, mat_B, mat_C]:
-            print("Allocation of matrix failed.\n")
-            exit("EXIT_FAILURE")
-        time.sleep(1)
+            if None in [mat_A, mat_B, mat_C]:
+                print("Allocation of matrix failed.\n")
+                exit("EXIT_FAILURE")
+            time.sleep(1)
 
-        start = time.time()
+            start = time.time()
 
-        # Begin matrix matrix multiply kernel
-        for i in size:
-            for k in size:
-                for j in size:
-                    # C[i][j] += A[i][k] * B[k][j]
-                    mat_C[i][j] += mat_A[i][k] * mat_B[k][j]
-        # End matrix matrix multiply kernel
+            # Begin matrix matrix multiply kernel
+            for i in size:
+                for k in size:
+                    for j in size:
+                        # C[i][j] += A[i][k] * B[k][j]
+                        mat_C[i][j] += mat_A[i][k] * mat_B[k][j]
+            # End matrix matrix multiply kernel
 
-        end = time.time()
-        gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
-        collect_info(start, end, gflops)
-    # collect results in one output File
-    with open("Ergebnisse_python-2D-list.txt", "w") as output:
-        output.writelines(header)
-        output.writelines(results)
-
-    return
+            end = time.time()
+            gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
+            collect_info(start, end, gflops)
+    except:
+        pass
+    finally:
+        # collect results in one output File
+        with open("Ergebnisse_python-2D-list.txt", "w") as output:
+            output.writelines(header)
+            output.writelines(results)
 
 
 def matrix():
