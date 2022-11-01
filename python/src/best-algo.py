@@ -34,7 +34,7 @@ def collect_info(t_start, t_end, gflops):
     results.append(string + "\n")
 
 
-def random_mat(dim_of_mat):
+def random_mat(dim_of_mat) -> np.ndarray:
     return 200 * np.random.rand(dim_of_mat, dim_of_mat) - 100
 
 
@@ -72,4 +72,5 @@ def matrix():
     calc()
 
 
-matrix()
+if __name__ == "__main__":
+    matrix()

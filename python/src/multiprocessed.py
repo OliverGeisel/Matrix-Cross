@@ -64,24 +64,19 @@ def calc():
         while i < dim:
             j = 0
             a_row = mat_A[i]
-            threads = list()
-            calc_of_row = mp.Array("d", range(dim))
+            args = list()
             while j < dim:
                 b_column = list()
                 for row in size:
                     b_column.append(mat_B[row][i])
-                process = mp.Process(target=src.subthread.subthread, args=(a_row, b_column, dim, j, calc_of_row))
-                threads.append(process)
-                process.start()
+                args.append((a_row, b_column, dim))
                 j += 1
-            for t in threads:
-                t.join()
+            with mp.Pool(8) as pool:
+                result = pool.starmap(src.subthread.subthread, args)
             x = 0
-            while x < len(calc_of_row):
-                threads[x].join()
-                mat_C[i][x] += calc_of_row[x]
+            while x < len(result):
+                mat_C[i][x] += result[x]
                 x += 1
-
             i += 1
         # End matrix matrix multiply kernel
 
@@ -89,7 +84,7 @@ def calc():
         gflops = ((2 * dim ** 3) / 1_000_000_000.0) / (end - start)
         collect_info(start, end, gflops)
         # collect results in one output File
-        with open("Ergebnisse_python-2D-list.txt", "w") as output:
+        with open("Ergebnisse_python-threaded.txt", "w") as output:
             output.writelines(header)
             output.writelines(results)
 
@@ -97,8 +92,11 @@ def calc():
 
 
 def matrix():
-    print(mp.get_start_method())
+    print(mp.get_all_start_methods())
+    mp.set_start_method("spawn")
+    print(f"Method: {str(mp.get_start_method())}")
     calc()
+
 
 if __name__ == "__main__":
     matrix()

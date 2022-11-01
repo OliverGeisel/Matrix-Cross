@@ -1,9 +1,10 @@
 import multiprocessing as mp
 
 
-def subthread(row_a, column_b, dim, result_index, result_aray):
+def subthread(row_a, column_b, dim):
     mp.freeze_support()
     k = 0
+    result = 0
     while k < dim - 31:
         temp = 0
         # C[i][j] += A[i][k] * B[k][j]
@@ -39,5 +40,6 @@ def subthread(row_a, column_b, dim, result_index, result_aray):
         temp += row_a[k + 29] * column_b[k + 29]
         temp += row_a[k + 30] * column_b[k + 30]
         temp += row_a[k + 31] * column_b[k + 31]
-        result_aray[result_index] = temp
+        result += temp
         k += 32
+    return result
